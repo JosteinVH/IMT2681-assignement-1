@@ -1,7 +1,7 @@
 package main
 
 import (
-	. "jvh_local/TEST/api"
+	. "jvh_local/IMT2681-assignement-1/api"
 	"log"
 	"net/http"
 	"os"

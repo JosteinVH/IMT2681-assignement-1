@@ -3,7 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	."jvh_local/TEST/data"
+	."jvh_local/IMT2681-assignement-1/data"
 	"github.com/marni/goigc"
 	"net/http"
 	"regexp"

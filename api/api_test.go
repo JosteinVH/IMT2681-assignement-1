@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	. "jvh_local/TEST/data"
+	. "jvh_local/IMT2681-assignement-1/data"
 	"net/http"
 	"net/http/httptest"
 	"testing"
