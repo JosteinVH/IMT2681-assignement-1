@@ -26,15 +26,17 @@ func conver(d time.Duration) string {
 	sec := d.Seconds()
 
 	felles = append(felles, "P")
-	year  := int(sec / 31556952) // Years in seconds
+
+	// Divide seconds with years in seconds to find number of current years
+	year  := int(sec / 31556952)
 	if year >= 1 {
 		felles = append(felles, strconv.Itoa(year))
 		felles = append(felles, "Y")
 		// Subtracting the number of years in seconds - to provide right amount of seconds
 		sec -= float64(31556952 * year)
 	}
-
-	month := int(sec / 2629746)  // Months in seconds
+	// Divide seconds with months in seconds to find number of current months
+	month := int(sec / 2629746)
 	if month >= 1 {
 		felles = append(felles, strconv.Itoa(month))
 		felles = append(felles, "M")
@@ -42,6 +44,7 @@ func conver(d time.Duration) string {
 		sec -= float64(2629746 * month)
 	}
 
+	// Divide seconds with days in seconds to find number of current days
 	day   := int(sec / 86400)	 // Days in seconds
 	if day >= 1 {
 		felles = append(felles, strconv.Itoa(day))
@@ -52,6 +55,7 @@ func conver(d time.Duration) string {
 
 	felles = append(felles, "T")
 
+	// Divide seconds with hours in seconds to find number of current hours
 	hour  := int(sec / 3600) 	 // Hours in seconds
 	if hour >= 1 {
 		felles = append(felles, strconv.Itoa(hour))
@@ -60,6 +64,8 @@ func conver(d time.Duration) string {
 		sec -= float64(3600 * hour)
 
 	}
+
+	// Divide seconds with minutes in seconds to find number of current minutes
 	min   := int(sec / 60) 		 // Minutes in seconds
 	if min >= 1 {
 		felles = append(felles, strconv.Itoa(min))
