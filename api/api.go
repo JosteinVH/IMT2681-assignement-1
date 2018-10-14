@@ -25,13 +25,8 @@ func conver(d time.Duration) string {
 	var felles []string
 	sec := d.Seconds()
 
-	min   := int(sec / 60) 		 // Minutes in seconds
-	hour  := int(sec / 3600) 	 // Hours in seconds
-	day   := int(sec / 86400)	 // Days in seconds
-	month := int(sec / 2629746)  // Months in seconds
-	year  := int(sec / 31556952) // Years in seconds
-
 	felles = append(felles, "P")
+	year  := int(sec / 31556952) // Years in seconds
 	if year >= 1 {
 		felles = append(felles, strconv.Itoa(year))
 		felles = append(felles, "Y")
@@ -39,7 +34,7 @@ func conver(d time.Duration) string {
 		sec -= float64(31556952 * year)
 	}
 
-
+	month := int(sec / 2629746)  // Months in seconds
 	if month >= 1 {
 		felles = append(felles, strconv.Itoa(month))
 		felles = append(felles, "M")
@@ -47,7 +42,7 @@ func conver(d time.Duration) string {
 		sec -= float64(2629746 * month)
 	}
 
-
+	day   := int(sec / 86400)	 // Days in seconds
 	if day >= 1 {
 		felles = append(felles, strconv.Itoa(day))
 		felles = append(felles, "D")
@@ -57,7 +52,7 @@ func conver(d time.Duration) string {
 
 	felles = append(felles, "T")
 
-
+	hour  := int(sec / 3600) 	 // Hours in seconds
 	if hour >= 1 {
 		felles = append(felles, strconv.Itoa(hour))
 		felles = append(felles, "H")
@@ -65,7 +60,7 @@ func conver(d time.Duration) string {
 		sec -= float64(3600 * hour)
 
 	}
-
+	min   := int(sec / 60) 		 // Minutes in seconds
 	if min >= 1 {
 		felles = append(felles, strconv.Itoa(min))
 		felles = append(felles, "M")

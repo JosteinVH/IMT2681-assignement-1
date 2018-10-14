@@ -8,6 +8,7 @@ type Tracks struct {
 	Track_length float64 `json:"track_length"`
 }
 
+// Igcinfo
 type Info struct {
 	Uptime  string `json:"uptime"`
 	Info    string `json:"info"`
