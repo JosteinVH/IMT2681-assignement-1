@@ -25,27 +25,36 @@ func conver(d time.Duration) string {
 	var felles []string
 	sec := d.Seconds()
 
+	const (
+		mins	= 60
+		hours   = 3600
+		days    = 86400
+		months  = 2629746
+		years   = 31556952
+	)
+
+
 	felles = append(felles, "P")
 
 	// Divide seconds with years in seconds to find number of current years
-	year  := int(sec / 31556952)
+	year  := int(sec / years)
 	if year >= 1 {
 		felles = append(felles, strconv.Itoa(year))
 		felles = append(felles, "Y")
 		// Subtracting the number of years in seconds - to provide right amount of seconds
-		sec -= float64(31556952 * year)
+		sec -= float64(years * year)
 	}
 	// Divide seconds with months in seconds to find number of current months
-	month := int(sec / 2629746)
+	month := int(sec / months)
 	if month >= 1 {
 		felles = append(felles, strconv.Itoa(month))
 		felles = append(felles, "M")
 		// Subtracting the number of months in seconds - to provide right amount of seconds
-		sec -= float64(2629746 * month)
+		sec -= float64(months * month)
 	}
 
 	// Divide seconds with days in seconds to find number of current days
-	day   := int(sec / 86400)	 // Days in seconds
+	day   := int(sec / days)	 // Days in seconds
 	if day >= 1 {
 		felles = append(felles, strconv.Itoa(day))
 		felles = append(felles, "D")
@@ -56,21 +65,21 @@ func conver(d time.Duration) string {
 	felles = append(felles, "T")
 
 	// Divide seconds with hours in seconds to find number of current hours
-	hour  := int(sec / 3600) 	 // Hours in seconds
+	hour  := int(sec / hours) 	 // Hours in seconds
 	if hour >= 1 {
 		felles = append(felles, strconv.Itoa(hour))
 		felles = append(felles, "H")
 		// Subtracting the number of hours in seconds - to provide right amount of seconds
-		sec -= float64(3600 * hour)
+		sec -= float64(hours * hour)
 
 	}
 
 	// Divide seconds with minutes in seconds to find number of current minutes
-	min   := int(sec / 60) 		 // Minutes in seconds
+	min   := int(sec / mins) 		 // Minutes in seconds
 	if min >= 1 {
 		felles = append(felles, strconv.Itoa(min))
 		felles = append(felles, "M")
-		sec -= float64(60 * min)
+		sec -= float64(mins * min)
 
 	}
 
