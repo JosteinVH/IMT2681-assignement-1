@@ -26,11 +26,11 @@ func conver(d time.Duration) string {
 	sec := d.Seconds()
 
 	const (
-		mins	= 60
-		hours   = 3600
-		days    = 86400
-		months  = 2629746
-		years   = 31556952
+		mins	= 60         // Minutes in seconds
+		hours   = 3600	   // Hours in seconds
+		days    = 86400	   // Days in seconds
+		months  = 2629746  // Months in seconds
+		years   = 31556952 // Years in seconds
 	)
 
 
