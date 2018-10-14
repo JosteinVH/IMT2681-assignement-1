@@ -24,72 +24,72 @@ func conver(d time.Duration) string {
 	// For string manipulation
 	var felles []string
 	sec := d.Seconds()
-	/*min := int(sec) / 60
-	hour := 1 //int(sec) / 3600
-	day := int(sec) / 86400
-	month := int(sec) / 2629746
-	year := int(sec) / 31556952*/
-const (
-	multMinute = 60
-	multHour   = multMinute * 60
-	multDay    = multHour * 24
-	multWeek   = multDay * 7
-	multYear   = multDay * 365.25 // have to get years first to account for leap years
-	multMonth  = multYear / 12    // once we have years we use that to get months
-)
-	felles = append(felles, "P")
 
-	year := int(sec / multYear)
+	min   := int(sec / 60) 		 // Minutes in seconds
+	hour  := int(sec / 3600) 	 // Hours in seconds
+	day   := int(sec / 86400)	 // Days in seconds
+	month := int(sec / 2629746)  // Months in seconds
+	year  := int(sec / 31556952) // Years in seconds
+
+	felles = append(felles, "P")
 	if year >= 1 {
 		felles = append(felles, strconv.Itoa(year))
 		felles = append(felles, "Y")
+		// Subtracting the number of years in seconds - to provide right amount of seconds
 		sec -= float64(31556952 * year)
 	}
 
-	month := int(sec / multMonth)
+
 	if month >= 1 {
 		felles = append(felles, strconv.Itoa(month))
 		felles = append(felles, "M")
+		// Subtracting the number of months in seconds - to provide right amount of seconds
 		sec -= float64(2629746 * month)
 	}
 
-	day := int(sec / multDay)
+
 	if day >= 1 {
 		felles = append(felles, strconv.Itoa(day))
 		felles = append(felles, "D")
+		// Subtracting the number of days in seconds - to provide right amount of seconds
 		sec -= float64(86400 * day)
 	}
 
 	felles = append(felles, "T")
 
-	hour := int(sec / multHour)
+
 	if hour >= 1 {
 		felles = append(felles, strconv.Itoa(hour))
 		felles = append(felles, "H")
+		// Subtracting the number of hours in seconds - to provide right amount of seconds
 		sec -= float64(3600 * hour)
 
 	}
 
-	min := int(sec / multMinute)
 	if min >= 1 {
 		felles = append(felles, strconv.Itoa(min))
 		felles = append(felles, "M")
 		sec -= float64(60 * min)
 
 	}
+
 	if sec >= 0 {
 		felles = append(felles, strconv.Itoa(int(sec)))
 		felles = append(felles, "S")
 	}
 
+	// Joins the part of the slice to one string
 	k := strings.Join(felles, "")
+	// Returns string with corresponding timestamp
 	return k
 }
 
 
 
 func InfoHandler(w http.ResponseWriter, r *http.Request) {
+
 	check := regexp.MustCompile("^/igcinfo/api/$")
+	// Checks if the URL match the regex
 	if check.MatchString(r.URL.Path) {
 		// Time since application started
 		uptime := time.Since(t)
@@ -99,10 +99,15 @@ func InfoHandler(w http.ResponseWriter, r *http.Request) {
 			"Service for IGC tracks.",
 			"v1",
 		}
+
+		// Set the header to json
 		w.Header().Set("Content-Type", "application/json")
+		// Encodes information to user
 		json.NewEncoder(w).Encode(infoApi)
 	} else {
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		// If unknown path is provided - StatusCode 404 is returned
+		http.NotFound(w,r)
+		//http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 	}
 
 }
@@ -110,6 +115,7 @@ func InfoHandler(w http.ResponseWriter, r *http.Request) {
 func ApiHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
+	// Based on request method
 	case "POST":
 		PostAPI(w, r)
 
@@ -123,6 +129,7 @@ func ApiHandler(w http.ResponseWriter, r *http.Request) {
 
 func PostAPI(w http.ResponseWriter, r *http.Request) {
 	var igcUrl Url
+	// If sent data is actual json
 	if err := json.NewDecoder(r.Body).Decode(&igcUrl); err != nil {
 		http.Error(w, "Check body", http.StatusBadRequest)
 		return
@@ -130,34 +137,37 @@ func PostAPI(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 	track, err := igc.ParseLocation(igcUrl.Url)
+	// Checks for valid URL sent in body
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
-	}
+	} else {
 
-	// Make sure the track received is not empty
-	// Finds total track_length
-	totalDistance := 0.0
-	for i := 0; i < len(track.Points)-1; i++ {
-		totalDistance += track.Points[i].Distance(track.Points[i+1])
-	}
+		// Finds total track_length
+		totalDistance := 0.0
+		for i := 0; i < len(track.Points)-1; i++ {
+			totalDistance += track.Points[i].Distance(track.Points[i+1])
+		}
 
-	// SLICE OF INT TO KEEP TRACK OF THE POST ID'S
-	idCount++
-	ids = append(ids, idCount)
-	// Converts the id coutner to string
-	trackId := strconv.Itoa(idCount)
-	tracks[trackId] = Tracks{
-		track.Date.String(),
-		track.Pilot,
-		track.GliderType,
-		track.GliderID,
-		totalDistance,
-	}
-	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(TrackId{Id: idCount}); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		// SLICE OF INT TO KEEP TRACK OF THE POST ID'S
+		idCount++
+		ids = append(ids, idCount)
+		// Converts the id counter to string
+		trackId := strconv.Itoa(idCount)
+		// Stores the received track in the map
+		tracks[trackId] = Tracks{
+			track.Date.String(),
+			track.Pilot,
+			track.GliderType,
+			track.GliderID,
+			totalDistance,
+		}
+		w.Header().Set("Content-Type", "application/json")
+		// Encodes unique id in json - back to user
+		if err := json.NewEncoder(w).Encode(TrackId{Id: idCount}); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 }
 
@@ -171,12 +181,15 @@ func GetAPI(w http.ResponseWriter, r *http.Request) {
 
 func IdHandler(w http.ResponseWriter, r *http.Request) {
 
+	// Regex to check the URL provided by user
 	check := regexp.MustCompile("^/igcinfo/api/igc/[0-9]/([a-zA-Z_]+)$")
 	test := regexp.MustCompile(("^/igcinfo/api/igc/[0-9]$"))
 	path := strings.Split(r.URL.Path, "/")
 
 	for i, v := range tracks {
+		// Id in map matches Id in url
 		if i == path[4] {
+			// Should rather check URL before checking ID
 			if check.MatchString(r.URL.Path) {
 				switch path[5] {
 				case "pilot":
@@ -195,23 +208,26 @@ func IdHandler(w http.ResponseWriter, r *http.Request) {
 					fmt.Fprint(w, tracks[i].H_date)
 					return
 				default:
+					// Returns 404 with empty body - when not known method is provided
 					http.Error(w, "", http.StatusNotFound)
 					return
 				}
 			} else if test.MatchString(r.URL.Path) {
-				checkHandler(w, r, v)
+				CheckHandler(w, r, v)
 			} else {
-				http.NotFound(w, r)
+
+				http.Error(w, "",http.StatusNotFound)
 			}
 			return
 		}
 	}
+	// Returns 404 with empty body - if no ID in map matches ID provided by user
 	http.Error(w, "",http.StatusNotFound)
-	//http.NotFound(w,r)
 }
 
-func checkHandler(w http.ResponseWriter, r *http.Request, t Tracks) {
+func CheckHandler(w http.ResponseWriter, r *http.Request, t Tracks) {
 	w.Header().Set("Content-Type", "application/json")
+	// Encodes information for a specific track in json back to user
 	if err := json.NewEncoder(w).Encode(t); err != nil {
 		http.Error(w,"Could not encode", http.StatusInternalServerError)
 	}
